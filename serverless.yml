@@ -1,0 +1,83 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: vinder-api
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  role: arn:aws:iam::344615800739:role/lambda-vpc-execution-role
+
+# you can overwrite defaults here
+#  stage: dev
+  region: eu-west-2
+  vpc: # Optional VPC. But if you use VPC then both subproperties (securityGroupIds and subnetIds) are required
+    securityGroupIds:
+      - sg-02e14cdd9f57775ca
+    subnetIds:
+      - subnet-0629fc901acd90083
+      - subnet-075af0bc267c0a2ec
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+environment:
+   API_KEY: "${self:custom.secrets.API_KEY}"
+   API_SECRET: "${self:custom.secrets.API_SECRET}"
+   COMMON_API_KEY: "${self:custom.secrets.COMMON_API_KEY}"
+   COMMON_API_SECRET: "${self:custom.secrets.COMMON_API_SECRET}"
+
+# you can add packaging information here
+package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+   exclude:
+     - secrets.yml
+custom:
+  stage: ${opt:stage,self:provider.stage}
+  secrets: ${file(secrets.yml):${self:custom.stage}}
+
+functions:
+  getRestaurants:
+    handler: handler.getRestaurants
+    timeout: 100
+    events:
+     - http:
+         path: restaurants
+         method: get
+  # getRestaurants:
+  #   handler: handler.getRestaurants
+  #   timeout: 100
+  #   events:
+  #    - http:
+  #        path: restaurants
+  #        method: get

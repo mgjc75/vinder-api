@@ -1,0 +1,12 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# yml secrets
+secrets.yml
+
+# database
+database.js
