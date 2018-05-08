@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.234.1",
+    "file-type": "^7.7.1",
     "pg-promise": "^8.4.0",
     "serverless": "^1.27.0"
   }

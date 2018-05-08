@@ -1,7 +1,8 @@
 const pgp = require("pg-promise")({ promiseLib: Promise });
 const databaseConn = require("./database");
 const AWS = require("aws-sdk");
-const s3 = new AWS.s3();
+const s3 = new AWS.S3();
+const fileType = require("file-type");
 const db = pgp(databaseConn);
 
 module.exports.getRestaurants = (event, context, callback) => {
@@ -197,4 +198,80 @@ module.exports.getCommentsByDishId = (event, context, callback) => {
 
 module.exports.updateAccount = (event, context, callback) => {};
 
-module.exports.uploadImage = (event, context, callback) => {};
+// module.exports.uploadImage = (event, context, callback) => {
+//   const request = event.body;
+//   console.log(event.body);
+//   // const base64String = request.base64String;
+//   const buffer = new Buffer(event.body, "base64");
+
+//   const fileMime = fileType(buffer);
+//   if (fileMime === null) {
+//     return context.fail("the string supplied is not a file type");
+//   }
+
+//   const file = getFile(fileMime, buffer);
+//   const params = file.params;
+
+//   s3.putObject(params, function(err, data) {
+//     if (err) {
+//       return console.log(err);
+//     }
+//     return console.log("File URL: ", file.full_path);
+//   });
+// };
+
+module.exports.uploadImage = (event, context, callback) => {
+  let buffer = new Buffer(event.body, "base64");
+
+  console.log("Starting File saving!");
+
+  let params = {
+    Bucket: "vinder-photos",
+    Key: "image1.jpg",
+    Body: buffer,
+    ContentEncoding: "image/jpeg",
+    ACL: "public-read"
+  };
+
+  s3.putObject(params, function(err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("succesfully uploaded the image!");
+    }
+  });
+
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: "Go Serverless v1.0! Your function executed successfully!",
+      input: event
+    })
+  };
+
+  callback(null, response);
+};
+
+// module.exports.uploadImage = (event, context, callback) => {
+//   //console.log(event);
+//   //var params = JSON.parse(event.body);
+//   var params = JSON.parse(event.body);
+//   console.log(params);
+
+//   var s3Params = {
+//     Bucket: "vinder-photos",
+//     Key: params.name,
+//     ContentType: params.type,
+//     ACL: "public-read"
+//   };
+
+//   var uploadURL = s3.getSignedUrl("putObject", s3Params);
+
+//   callback(null, {
+//     statusCode: 200,
+//     headers: {
+//       "Access-Control-Allow-Origin": "https://www.my-site.com"
+//     },
+//     body: JSON.stringify({ uploadURL: uploadURL })
+//   });
+// };

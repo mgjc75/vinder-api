@@ -33,11 +33,11 @@ provider:
       - subnet-075af0bc267c0a2ec
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: "arn:aws:s3:::vinder-photos/uploads"
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -175,7 +175,8 @@ functions:
     handler: handler.uploadImage
     timeout: 30
     events:
-     - http:
-         path: image
-         method: post
+      - http:
+          path: image
+          method: post
+          cors: true
      
