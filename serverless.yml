@@ -100,7 +100,7 @@ functions:
     timeout: 30
     events:
      - http:
-         path: user
+         path: users
          method: get
   getRestaurantById:
     handler: handler.getRestaurantById

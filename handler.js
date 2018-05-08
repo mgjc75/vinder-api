@@ -22,7 +22,7 @@ module.exports.getRestaurants = (event, context, callback) => {
 
 module.exports.getDishes = (event, context, callback) => {
   db
-    .many("SELECT * FROM dishes")
+    .many("SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.longitude AS restaurant_longitude, restaurants.latitude AS restaurant_latitude FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id")
     .then(dishes => {
       const response = {
         statusCode: 200,
@@ -39,7 +39,6 @@ module.exports.getUsers = (event, context, callback) => {
   db
     .many("SELECT * FROM users")
     .then(users => {
-      // console.log(Array.isArray(restaurants), Object.keys(restaurants));
       const response = {
         statusCode: 200,
         body: JSON.stringify(users)
@@ -53,14 +52,14 @@ module.exports.getUsers = (event, context, callback) => {
 
 module.exports.addNewUser = (event, context, callback) => {
   const newUser = JSON.parse(event.body);
-  const firstname = newUser.first_name;
-  const lastname = newUser.last_name;
-  const useremail = newUser.user_email;
-  const uservalid = newUser.user_valid;
+  const firstName = newUser.firstName;
+  const lastName = newUser.lastName;
+  const userEmail = newUser.email;
+  const userValid = newUser.valid;
   db
     .one(
-      "INSERT INTO users (user_first_name, user_last_name, user_email, user_valid) VALUES ($1, $2, $3, $4) RETURNING *;",
-      [firstname, lastname, useremail, uservalid]
+      "INSERT INTO users (first_name, last_name, email, valid) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [firstName, lastName, userEmail, userValid]
     )
     .then(user => {
       const response = {
@@ -74,13 +73,13 @@ module.exports.addNewUser = (event, context, callback) => {
 module.exports.addDishToRestaurant = (event, context, callback) => {
   const newDish = JSON.parse(event.body);
   const resId = newDish.resId;
-  const dishTitle = newDish.title;
+  const dishName = newDish.name;
   const description = newDish.description;
-  const price = newDish.price;
+  const price = newDish.prices;
   db
     .one(
-      "INSERT INTO dishes (dish_title, dish_description, restaurant_id, dish_prices) VALUES ($1, $2, $3, $4) RETURNING *;",
-      [dishTitle, description, resId, price]
+      "INSERT INTO dishes (name, description, restaurant_id, prices) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [dishName, description, resId, price]
     )
     .then(dish => {
       const response = {
@@ -93,14 +92,15 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
 
 module.exports.addCommentToDish = (event, context, callback) => {
   const newComment = JSON.parse(event.body);
+  const commentTitle = newComment.commentTitle
   const commentBody = newComment.commentBody;
   const commentRating = newComment.commentRating;
   const userId = newComment.userId;
   const dishId = newComment.dishId;
   db
     .one(
-      "INSERT INTO comments (comment_body, comment_rating, user_id, dish_id) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
-      [commentBody, commentRating, userId, dishId]
+      "INSERT INTO comments (title, body, rating, user_id, dish_id) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
+      [commentTitle, commentBody, commentRating, userId, dishId]
     )
     .then(comment => {
       const response = {
@@ -129,7 +129,7 @@ module.exports.getComments = (event, context, callback) => {
 module.exports.getRestaurantById = (event, context, callback) => {
   const resId = event.pathParameters.id;
   db
-    .one("SELECT * FROM restaurants WHERE restaurants.restaurant_id = $1", [
+    .one("SELECT * FROM restaurants WHERE id = $1", [
       resId
     ])
     .then(restaurant => {
@@ -144,7 +144,7 @@ module.exports.getRestaurantById = (event, context, callback) => {
 module.exports.getUserById = (event, context, callback) => {
   const userId = event.pathParameters.id;
   db
-    .one("SELECT * FROM users WHERE users.user_id = $1", [userId])
+    .one("SELECT * FROM users WHERE id = $1", [userId])
     .then(user => {
       const response = {
         statusCode: 200,
@@ -174,27 +174,28 @@ module.exports.getRestaurantsByArea = (event, context, callback) => {
 
 module.exports.getDishByRestaurantId = (event, context, callback) => {
   const resId = event.pathParameters.id;
-  db
-    .many("SELECT * FROM dishes WHERE restaurant_id = $1", [resId])
-    .then(res => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(res)
-      };
-      callback(null, response);
-    });
-};
-
-module.exports.getCommentsByDishId = (event, context, callback) => {
-  const dishId = event.pathParameters.id;
-  db.many("SELECT * FROM comments WHERE dish_id = $1", [dishId]).then(dish => {
+  db.many("SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.phone AS restaurant_phone FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id WHERE restaurant_id = $1", [resId])
+  .then(res => {
     const response = {
       statusCode: 200,
-      body: JSON.stringify(dish)
+      body: JSON.stringify(res)
     };
     callback(null, response);
   });
 };
+
+module.exports.getCommentsByDishId = (event, context, callback) => {
+  const dishId = event.pathParameters.id;
+  db.many('SELECT comments.body, comments.created_at, comments.title, comments.user_id, comments.rating, comments.dish_id, comments.id, users.first_name AS users_first_name, users.last_name AS users_last_name FROM comments JOIN users ON users.id = comments.user_id  WHERE dish_id = $1', [dishId])
+  .then(dish => {
+      const response = {
+      statusCode: 200,
+      body: JSON.stringify(dish)
+      };
+      callback(null, response);
+  });
+  };
+  
 
 module.exports.updateAccount = (event, context, callback) => {};
 
