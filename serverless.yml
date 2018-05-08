@@ -164,4 +164,12 @@ functions:
      - http:
          path: comments
          method: get
+  getDishes:
+    handler: handler.getDishes
+    timeout: 100
+    events:
+     - http:
+         path: dishes
+         method: get
+         
      

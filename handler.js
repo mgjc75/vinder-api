@@ -18,6 +18,21 @@ module.exports.getRestaurants = (event, context, callback) => {
     });
 };
 
+module.exports.getDishes = (event, context, callback) => {
+  db
+    .many("SELECT * FROM dishes")
+    .then(dishes => {
+      const response = {
+        statusCode: 200,
+        body: JSON.stringify(dishes)
+      };
+      callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
+    });
+};
+
 module.exports.getUsers = (event, context, callback) => {
   db
     .many("SELECT * FROM users")
