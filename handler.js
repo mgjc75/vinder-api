@@ -69,11 +69,10 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
 module.exports.addCommentToDish = (event, context, callback) => {
   const newComment = JSON.parse(event.body);
   const commentBody = newComment.commentBody;
-  const commentCreatedAt = newComment.commentCreatedAt;
   const commentRating = newComment.commentRating;
   const userId = newComment.userId;
   const dishId = newComment.dishId;
-  db.one('INSERT INTO dishes (comment_body, comment_created_at, comment_rating, user_id, dish_id) VALUES ($1, $2, $3, $4, $5) RETURNING *;', [commentBody, commentCreatedAt, commentRating, userId, dishId])
+  db.one('INSERT INTO comments (comment_body, comment_rating, user_id, dish_id) VALUES ($1, $2, $3, $4, $5) RETURNING *;', [commentBody,  commentRating, userId, dishId])
   .then(comment => {
     const response = {
       statusCode: 200,
@@ -82,6 +81,20 @@ module.exports.addCommentToDish = (event, context, callback) => {
     callback(null, response);
   })
 };
+
+module.exports.getComments = (event, context, callback) => {
+  db.many("SELECT * FROM comments")
+  .then(comments => {
+    const response = {
+      statusCode: 200,
+      body: JSON.stringify(comments)
+    };
+    callback(null, response);
+  })
+  .catch(err => {
+    callback(err);
+  });
+}
 
 module.exports.getRestaurantById = (event, context, callback) => {
   const resId = event.pathParameters.id;
@@ -139,7 +152,7 @@ module.exports.getCommentsByDishId = (event, context, callback) => {
   .then(dish => {
     const response = {
       statusCode: 200,
-      body: JSON.stringify(res)
+      body: JSON.stringify(dish)
     };
     callback(null, response);
   });

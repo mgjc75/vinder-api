@@ -157,3 +157,11 @@ functions:
            parameters:
              paths:
                id: true
+  getComments:
+    handler: handler.getComments
+    timeout: 100
+    events:
+     - http:
+         path: comments
+         method: get
+     
