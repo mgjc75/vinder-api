@@ -171,5 +171,11 @@ functions:
      - http:
          path: dishes
          method: get
-         
+  uploadImage:
+    handler: handler.uploadImage
+    timeout: 30
+    events:
+     - http:
+         path: image
+         method: post
      
