@@ -1,6 +1,7 @@
 const pgp = require("pg-promise")({ promiseLib: Promise });
 const databaseConn = require("./database");
-
+const AWS = require("aws-sdk");
+const s3 = new AWS.s3();
 const db = pgp(databaseConn);
 
 module.exports.getRestaurants = (event, context, callback) => {
