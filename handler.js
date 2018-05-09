@@ -6,17 +6,16 @@ const fileType = require("file-type");
 const db = pgp(databaseConn);
 
 module.exports.getRestaurants = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   db
-    .many("SELECT * FROM restaurants")
+    .many(
+      "SELECT restaurants.id, restaurants.name, restaurants.address, restaurants.phone, restaurants.url, restaurants.longitude, restaurants.latitude,price, restaurants.image_url FROM restaurants"
+    )
     .then(restaurants => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(restaurants)
-      };
+      const response = { statusCode: 200, body: JSON.stringify(restaurants) };
       callback(null, response);
     })
     .catch(err => {
@@ -25,12 +24,14 @@ module.exports.getRestaurants = (event, context, callback) => {
 };
 
 module.exports.getDishes = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   db
-    .many("SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.longitude AS restaurant_longitude, restaurants.latitude AS restaurant_latitude FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id")
+    .many(
+      "SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.longitude AS restaurant_longitude, restaurants.latitude AS restaurant_latitude FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id"
+    )
     .then(dishes => {
       const response = {
         statusCode: 200,
@@ -44,17 +45,16 @@ module.exports.getDishes = (event, context, callback) => {
 };
 
 module.exports.getUsers = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   db
-    .many("SELECT * FROM users")
+    .many(
+      "SELECT users.id, users.first_name, users.last_name, users.email, users.valid FROM users"
+    )
     .then(users => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(users)
-      };
+      const response = { statusCode: 200, body: JSON.stringify(users) };
       callback(null, response);
     })
     .catch(err => {
@@ -63,9 +63,9 @@ module.exports.getUsers = (event, context, callback) => {
 };
 
 module.exports.addNewUser = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const newUser = JSON.parse(event.body);
   const firstName = newUser.firstName;
@@ -90,20 +90,19 @@ module.exports.addNewUser = (event, context, callback) => {
 };
 
 module.exports.addDishToRestaurant = (event, context, callback) => {
-  
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const newDish = JSON.parse(event.body);
   const resId = newDish.resId;
   const dishName = newDish.name;
   const description = newDish.description;
-  const price = newDish.prices;
-  const imageURL = newDish.imageURL
+  const price = newDish.price;
+  const imageURL = newDish.imageURL;
   db
     .one(
-      "INSERT INTO dishes (name, description, restaurant_id, prices, dish_image_url) VALUES ($1, $2, $3, $4) RETURNING *;",
+      "INSERT INTO dishes (name, description, restaurant_id, prices, dish_image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
       [dishName, description, resId, price, imageURL]
     )
     .then(dish => {
@@ -119,9 +118,9 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
 };
 
 module.exports.addCommentToDish = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const newComment = JSON.parse(event.body);
   const commentTitle = newComment.commentTitle;
@@ -147,17 +146,16 @@ module.exports.addCommentToDish = (event, context, callback) => {
 };
 
 module.exports.getComments = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   db
-    .many("SELECT * FROM comments")
+    .many(
+      "SELECT comments.id, comments.title, comments.body, comments.created_at, comments.rating, comments.user_id, comments.dish_id FROM comments"
+    )
     .then(comments => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(comments)
-      };
+      const response = { statusCode: 200, body: JSON.stringify(comments) };
       callback(null, response);
     })
     .catch(err => {
@@ -166,20 +164,18 @@ module.exports.getComments = (event, context, callback) => {
 };
 
 module.exports.getRestaurantById = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const resId = event.pathParameters.id;
   db
-    .one("SELECT * FROM restaurants WHERE id = $1", [
-      resId
-    ])
+    .one(
+      "SELECT restaurants.id, restaurants.name, restaurants.address, restaurants.phone, restaurants.url, restaurants.longitude, restaurants.latitude,price, restaurants.image_url FROM restaurants WHERE id = $1",
+      [resId]
+    )
     .then(restaurant => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(restaurant)
-      };
+      const response = { statusCode: 200, body: JSON.stringify(restaurant) };
       callback(null, response);
     })
     .catch(err => {
@@ -188,18 +184,18 @@ module.exports.getRestaurantById = (event, context, callback) => {
 };
 
 module.exports.getUserById = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const userId = event.pathParameters.id;
   db
-    .one("SELECT * FROM users WHERE id = $1", [userId])
+    .one(
+      "SELECT users.id, users.first_name, users.last_name, users.email, users.valid FROM users WHERE id = $1",
+      [userId]
+    )
     .then(user => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(user)
-      };
+      const response = { statusCode: 200, body: JSON.stringify(user) };
       callback(null, response);
     })
     .catch(err => {
@@ -208,9 +204,9 @@ module.exports.getUserById = (event, context, callback) => {
 };
 
 module.exports.getRestaurantsByArea = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const currentCoordinates = event.pathParameters.area;
   const coordsArray = currentCoordinates.split(",").map(Number);
@@ -233,43 +229,50 @@ module.exports.getRestaurantsByArea = (event, context, callback) => {
 };
 
 module.exports.getDishByRestaurantId = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const resId = event.pathParameters.id;
-  db.many("SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, dishes.dish_image_url, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.phone AS restaurant_phone FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id WHERE restaurant_id = $1", [resId])
-  .then(res => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify(res)
-    };
-    callback(null, response);
-  })
-  .catch(err => {
-    callback(err);
-  });
+  db
+    .many(
+      "SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, dishes.dish_image_url, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.phone AS restaurant_phone FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id WHERE restaurant_id = $1",
+      [resId]
+    )
+    .then(res => {
+      const response = {
+        statusCode: 200,
+        body: JSON.stringify(res)
+      };
+      callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
+    });
 };
 
 module.exports.getCommentsByDishId = (event, context, callback) => {
-  if (event.source === 'serverless-plugin-warmup') {
-    console.log('WarmUP - Lambda is warm!')
-    return callback(null, 'Lambda is warm!')
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
   }
   const dishId = event.pathParameters.id;
-  db.many('SELECT comments.body, comments.created_at, comments.title, comments.user_id, comments.rating, comments.dish_id, comments.id, users.first_name AS users_first_name, users.last_name AS users_last_name FROM comments JOIN users ON users.id = comments.user_id  WHERE dish_id = $1', [dishId])
-  .then(dish => {
+  db
+    .many(
+      "SELECT comments.body, comments.created_at, comments.title, comments.user_id, comments.rating, comments.dish_id, comments.id, users.first_name AS users_first_name, users.last_name AS users_last_name FROM comments JOIN users ON users.id = comments.user_id  WHERE dish_id = $1",
+      [dishId]
+    )
+    .then(dish => {
       const response = {
-      statusCode: 200,
-      body: JSON.stringify(dish)
+        statusCode: 200,
+        body: JSON.stringify(dish)
       };
       callback(null, response);
-  })
-  .catch(err => {
-    callback(err);
-  });
+    })
+    .catch(err => {
+      callback(err);
+    });
 };
-  
 
 module.exports.updateAccount = (event, context, callback) => {};
 

@@ -150,7 +150,7 @@ functions:
     timeout: 30
     events:
      - http:
-         path: restaurants/dish/{id}
+         path: restaurants/dishes/{id}
          method: get
          request:
            parameters:
