@@ -23,45 +23,6 @@ module.exports.getRestaurants = (event, context, callback) => {
     });
 };
 
-module.exports.getDishes = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
-  db
-    .many(
-      "SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.longitude AS restaurant_longitude, restaurants.latitude AS restaurant_latitude FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id"
-    )
-    .then(dishes => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(dishes)
-      };
-      callback(null, response);
-    })
-    .catch(err => {
-      callback(err);
-    });
-};
-
-module.exports.getUsers = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
-  db
-    .many(
-      "SELECT users.id, users.first_name, users.last_name, users.email, users.valid FROM users"
-    )
-    .then(users => {
-      const response = { statusCode: 200, body: JSON.stringify(users) };
-      callback(null, response);
-    })
-    .catch(err => {
-      callback(err);
-    });
-};
-
 module.exports.addNewUser = (event, context, callback) => {
   if (event.source === "serverless-plugin-warmup") {
     console.log("WarmUP - Lambda is warm!");
@@ -145,17 +106,17 @@ module.exports.addCommentToDish = (event, context, callback) => {
     });
 };
 
-module.exports.getComments = (event, context, callback) => {
+module.exports.getUsers = (event, context, callback) => {
   if (event.source === "serverless-plugin-warmup") {
     console.log("WarmUP - Lambda is warm!");
     return callback(null, "Lambda is warm!");
   }
   db
     .many(
-      "SELECT comments.id, comments.title, comments.body, comments.created_at, comments.rating, comments.user_id, comments.dish_id FROM comments"
+      "SELECT users.id, users.first_name, users.last_name, users.email, users.valid FROM users"
     )
-    .then(comments => {
-      const response = { statusCode: 200, body: JSON.stringify(comments) };
+    .then(users => {
+      const response = { statusCode: 200, body: JSON.stringify(users) };
       callback(null, response);
     })
     .catch(err => {
@@ -249,82 +210,41 @@ module.exports.getCommentsByDishId = (event, context, callback) => {
     });
 };
 
-module.exports.updateAccount = (event, context, callback) => {};
-
-// module.exports.uploadImage = (event, context, callback) => {
-//   const request = event.body;
-//   console.log(event.body);
-//   // const base64String = request.base64String;
-//   const buffer = new Buffer(event.body, "base64");
-
-//   const fileMime = fileType(buffer);
-//   if (fileMime === null) {
-//     return context.fail("the string supplied is not a file type");
-//   }
-
-//   const file = getFile(fileMime, buffer);
-//   const params = file.params;
-
-//   s3.putObject(params, function(err, data) {
-//     if (err) {
-//       return console.log(err);
-//     }
-//     return console.log("File URL: ", file.full_path);
-//   });
-// };
-
-module.exports.uploadImage = (event, context, callback) => {
-  let buffer = new Buffer(event.body, "base64");
-
-  console.log("Starting File saving!");
-
-  let params = {
-    Bucket: "vinder-photos",
-    Key: "image1.jpg",
-    Body: buffer,
-    ContentEncoding: "image/jpeg",
-    ACL: "public-read"
-  };
-
-  s3.putObject(params, function(err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("succesfully uploaded the image!");
-    }
-  });
-
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "Go Serverless v1.0! Your function executed successfully!",
-      input: event
+module.exports.getComments = (event, context, callback) => {
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
+  }
+  db
+    .many(
+      "SELECT comments.id, comments.title, comments.body, comments.created_at, comments.rating, comments.user_id, comments.dish_id FROM comments"
+    )
+    .then(comments => {
+      const response = { statusCode: 200, body: JSON.stringify(comments) };
+      callback(null, response);
     })
-  };
-
-  callback(null, response);
+    .catch(err => {
+      callback(err);
+    });
 };
 
-// module.exports.uploadImage = (event, context, callback) => {
-//   //console.log(event);
-//   //var params = JSON.parse(event.body);
-//   var params = JSON.parse(event.body);
-//   console.log(params);
-
-//   var s3Params = {
-//     Bucket: "vinder-photos",
-//     Key: params.name,
-//     ContentType: params.type,
-//     ACL: "public-read"
-//   };
-
-//   var uploadURL = s3.getSignedUrl("putObject", s3Params);
-
-//   callback(null, {
-//     statusCode: 200,
-//     headers: {
-//       "Access-Control-Allow-Origin": "https://www.my-site.com"
-//     },
-//     body: JSON.stringify({ uploadURL: uploadURL })
-//   });
-// };
+module.exports.getDishes = (event, context, callback) => {
+  if (event.source === "serverless-plugin-warmup") {
+    console.log("WarmUP - Lambda is warm!");
+    return callback(null, "Lambda is warm!");
+  }
+  db
+    .many(
+      "SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.longitude AS restaurant_longitude, restaurants.latitude AS restaurant_latitude FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id"
+    )
+    .then(dishes => {
+      const response = {
+        statusCode: 200,
+        body: JSON.stringify(dishes)
+      };
+      callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
+    });
+};
