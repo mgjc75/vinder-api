@@ -79,7 +79,7 @@ module.exports.addNewUser = (event, context, callback) => {
     )
     .then(user => {
       const response = {
-        statusCode: 200,
+        statusCode: 201,
         body: JSON.stringify(event)
       };
       callback(null, response);
@@ -107,7 +107,7 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
     )
     .then(dish => {
       const response = {
-        statusCode: 200,
+        statusCode: 201,
         body: JSON.stringify(dish)
       };
       callback(null, response);
@@ -135,7 +135,7 @@ module.exports.addCommentToDish = (event, context, callback) => {
     )
     .then(comment => {
       const response = {
-        statusCode: 200,
+        statusCode: 201,
         body: JSON.stringify(comment)
       };
       callback(null, response);
