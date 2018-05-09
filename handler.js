@@ -203,31 +203,6 @@ module.exports.getUserById = (event, context, callback) => {
     });
 };
 
-module.exports.getRestaurantsByArea = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
-  const currentCoordinates = event.pathParameters.area;
-  const coordsArray = currentCoordinates.split(",").map(Number);
-  console.log(coordsArray);
-  db
-    .many(
-      "SELECT *, ACOS(SIN(latitude) * SIN($1)) + COS(latitude) * COS($1) * COS(longitude) - ($2)) ) * 6380 AS distance FROM restaurants WHERE ACOS( SIN($2) * SIN($1) + COS(latitude) * COS($1) * COS(longitude) - $1 )) * 6380 < 10",
-      [coordsArray[0], coordsArray[1]]
-    )
-    .then(restaurants => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify(restaurants)
-      };
-      callback(null, response);
-    })
-    .catch(err => {
-      callback(err);
-    });
-};
-
 module.exports.getDishByRestaurantId = (event, context, callback) => {
   if (event.source === "serverless-plugin-warmup") {
     console.log("WarmUP - Lambda is warm!");

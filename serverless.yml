@@ -132,18 +132,6 @@ functions:
            parameters:
              paths:
                id: true
-  getRestaurantsByArea:
-    warmup: true
-    handler: handler.getRestaurantsByArea
-    timeout: 30
-    events:
-     - http:
-         path: restaurants/{area}
-         method: get
-         request:
-           parameters:
-             paths:
-               area: true
   getDishByRestaurantId:
     warmup: true
     handler: handler.getDishByRestaurantId
