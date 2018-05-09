@@ -31,13 +31,17 @@ provider:
     subnetIds:
       - subnet-0629fc901acd90083
       - subnet-075af0bc267c0a2ec
-
+  plugins:
+    - serverless-plugin-warmup
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
     - Effect: "Allow"
-      Action:
         - "s3:*"
-      Resource: "arn:aws:s3:::vinder-photos/uploads"
+      Action:
+        - 'lambda:InvokeFunction'
+      Resource: 
+        -"arn:aws:s3:::vinder-photos/uploads"
+        -"*"
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -68,6 +72,7 @@ custom:
 
 functions:
   getRestaurants:
+    warmup: true
     handler: handler.getRestaurants
     timeout: 30
     events:
@@ -75,6 +80,7 @@ functions:
          path: restaurants
          method: get
   addNewUser:
+    warmup: true
     handler: handler.addNewUser
     timeout: 30
     events:
@@ -82,6 +88,7 @@ functions:
          path: user
          method: post
   addDishToRestaurant:
+    warmup: true
     handler: handler.addDishToRestaurant
     timeout: 30
     events: 
@@ -89,6 +96,7 @@ functions:
          path: dish
          method: post
   addCommentToDish:
+    warmup: true
     handler: handler.addCommentToDish
     timeout: 30
     events: 
@@ -96,6 +104,7 @@ functions:
          path: comment
          method: post
   getUsers:
+    warmup: true
     handler: handler.getUsers
     timeout: 30
     events:
@@ -103,6 +112,7 @@ functions:
          path: users
          method: get
   getRestaurantById:
+    warmup: true
     handler: handler.getRestaurantById
     timeout: 30
     events:
@@ -114,6 +124,7 @@ functions:
              paths:
                id: true
   getUserById:
+    warmup: true
     handler: handler.getUserById
     timeout: 30
     events:
@@ -125,6 +136,7 @@ functions:
              paths:
                id: true
   getRestaurantsByArea:
+    warmup: true
     handler: handler.getRestaurantsByArea
     timeout: 30
     events:
@@ -136,6 +148,7 @@ functions:
              paths:
                area: true
   getDishByRestaurantId:
+    warmup: true
     handler: handler.getDishByRestaurantId
     timeout: 30
     events:
@@ -147,6 +160,7 @@ functions:
              paths:
                id: true
   getCommentsByDishId:
+    warmup: true
     handler: handler.getCommentsByDishId
     timeout: 30
     events:
@@ -158,6 +172,7 @@ functions:
              paths:
                id: true
   getComments:
+    warmup: true
     handler: handler.getComments
     timeout: 30
     events:
@@ -165,6 +180,7 @@ functions:
          path: comments
          method: get
   getDishes:
+    warmup: true
     handler: handler.getDishes
     timeout: 30
     events:
@@ -172,6 +188,7 @@ functions:
          path: dishes
          method: get
   uploadImage:
+    warmup: true
     handler: handler.uploadImage
     timeout: 30
     events:
