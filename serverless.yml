@@ -35,13 +35,10 @@ provider:
     - serverless-plugin-warmup
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
-    - Effect: "Allow"
-        - "s3:*"
-      Action:
-        - 'lambda:InvokeFunction'
-      Resource: 
-        -"arn:aws:s3:::vinder-photos/uploads"
-        -"*"
+  - Effect: 'Allow'
+    Action:
+      - 'lambda:InvokeFunction'
+    Resource: "*"
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"

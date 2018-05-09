@@ -83,10 +83,14 @@ module.exports.addNewUser = (event, context, callback) => {
         body: JSON.stringify(event)
       };
       callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
     });
 };
 
 module.exports.addDishToRestaurant = (event, context, callback) => {
+  
   if (event.source === 'serverless-plugin-warmup') {
     console.log('WarmUP - Lambda is warm!')
     return callback(null, 'Lambda is warm!')
@@ -96,10 +100,11 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
   const dishName = newDish.name;
   const description = newDish.description;
   const price = newDish.prices;
+  const imageURL = newDish.imageURL
   db
     .one(
-      "INSERT INTO dishes (name, description, restaurant_id, prices) VALUES ($1, $2, $3, $4) RETURNING *;",
-      [dishName, description, resId, price]
+      "INSERT INTO dishes (name, description, restaurant_id, prices, dish_image_url) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [dishName, description, resId, price, imageURL]
     )
     .then(dish => {
       const response = {
@@ -107,6 +112,9 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
         body: JSON.stringify(dish)
       };
       callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
     });
 };
 
@@ -132,6 +140,9 @@ module.exports.addCommentToDish = (event, context, callback) => {
         body: JSON.stringify(comment)
       };
       callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
     });
 };
 
@@ -170,6 +181,9 @@ module.exports.getRestaurantById = (event, context, callback) => {
         body: JSON.stringify(restaurant)
       };
       callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
     });
 };
 
@@ -187,6 +201,9 @@ module.exports.getUserById = (event, context, callback) => {
         body: JSON.stringify(user)
       };
       callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
     });
 };
 
@@ -209,6 +226,9 @@ module.exports.getRestaurantsByArea = (event, context, callback) => {
         body: JSON.stringify(restaurants)
       };
       callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
     });
 };
 
@@ -218,13 +238,16 @@ module.exports.getDishByRestaurantId = (event, context, callback) => {
     return callback(null, 'Lambda is warm!')
   }
   const resId = event.pathParameters.id;
-  db.many("SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.phone AS restaurant_phone FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id WHERE restaurant_id = $1", [resId])
+  db.many("SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, dishes.dish_image_url, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.phone AS restaurant_phone FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id WHERE restaurant_id = $1", [resId])
   .then(res => {
     const response = {
       statusCode: 200,
       body: JSON.stringify(res)
     };
     callback(null, response);
+  })
+  .catch(err => {
+    callback(err);
   });
 };
 
@@ -241,8 +264,11 @@ module.exports.getCommentsByDishId = (event, context, callback) => {
       body: JSON.stringify(dish)
       };
       callback(null, response);
+  })
+  .catch(err => {
+    callback(err);
   });
-  };
+};
   
 
 module.exports.updateAccount = (event, context, callback) => {};
