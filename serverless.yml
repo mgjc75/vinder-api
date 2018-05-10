@@ -161,4 +161,15 @@ functions:
      - http:
          path: dishes
          method: get
+  getUserByEmail:
+    handler: handler.getUserByEmail
+    timeout: 30
+    events:
+     - http:
+         path: user/email/{email}
+         method: get
+         request:
+           parameters:
+             paths:
+               email: true
      

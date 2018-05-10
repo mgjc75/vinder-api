@@ -20,7 +20,9 @@ const sql = {
   sqlAddDishToRestaurant:
     "INSERT INTO dishes (name, description, restaurant_id, prices, dish_image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
   sqlAddNewUser:
-    "INSERT INTO users (first_name, last_name, email, valid) VALUES ($1, $2, $3, $4) RETURNING *;"
+    "INSERT INTO users (first_name, last_name, email, valid) VALUES ($1, $2, $3, $4) RETURNING *;",
+  sqlGetUserByEmail:
+    "SELECT users.id, users.first_name, users.last_name, users.email, users.valid FROM users WHERE email = $1;"
 };
 
 module.exports = sql;

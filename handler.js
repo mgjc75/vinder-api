@@ -54,10 +54,6 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
       price,
       imageURL
     ])
-    // .one(
-    //   "INSERT INTO dishes (name, description, restaurant_id, prices, dish_image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
-    //   [dishName, description, resId, price, imageURL]
-    // )
     .then(dish => {
       const response = { statusCode: 201, body: JSON.stringify(dish) };
       callback(null, response);
@@ -123,6 +119,19 @@ module.exports.getUserById = (event, context, callback) => {
   const userId = event.pathParameters.id;
   db
     .one(sql.sqlGetUserById, [userId])
+    .then(user => {
+      const response = { statusCode: 200, body: JSON.stringify(user) };
+      callback(null, response);
+    })
+    .catch(err => {
+      callback(err);
+    });
+};
+
+module.exports.getUserByEmail = (event, context, callback) => {
+  const email = event.pathParameters.email;
+  db
+    .one(sql.sqlGetUserByEmail, [email])
     .then(user => {
       const response = { statusCode: 200, body: JSON.stringify(user) };
       callback(null, response);
