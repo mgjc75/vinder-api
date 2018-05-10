@@ -6,10 +6,6 @@ const fileType = require("file-type");
 const db = pgp(databaseConn);
 
 module.exports.getRestaurants = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   db
     .many(
       "SELECT restaurants.id, restaurants.name, restaurants.address, restaurants.phone, restaurants.url, restaurants.longitude, restaurants.latitude,price, restaurants.image_url FROM restaurants"
@@ -24,10 +20,6 @@ module.exports.getRestaurants = (event, context, callback) => {
 };
 
 module.exports.addNewUser = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const newUser = JSON.parse(event.body);
   const firstName = newUser.firstName;
   const lastName = newUser.lastName;
@@ -51,10 +43,6 @@ module.exports.addNewUser = (event, context, callback) => {
 };
 
 module.exports.addDishToRestaurant = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const newDish = JSON.parse(event.body);
   const resId = newDish.resId;
   const dishName = newDish.name;
@@ -79,10 +67,6 @@ module.exports.addDishToRestaurant = (event, context, callback) => {
 };
 
 module.exports.addCommentToDish = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const newComment = JSON.parse(event.body);
   const commentTitle = newComment.commentTitle;
   const commentBody = newComment.commentBody;
@@ -107,10 +91,6 @@ module.exports.addCommentToDish = (event, context, callback) => {
 };
 
 module.exports.getUsers = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   db
     .many(
       "SELECT users.id, users.first_name, users.last_name, users.email, users.valid FROM users"
@@ -125,10 +105,6 @@ module.exports.getUsers = (event, context, callback) => {
 };
 
 module.exports.getRestaurantById = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const resId = event.pathParameters.id;
   db
     .one(
@@ -145,10 +121,6 @@ module.exports.getRestaurantById = (event, context, callback) => {
 };
 
 module.exports.getUserById = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const userId = event.pathParameters.id;
   db
     .one(
@@ -165,10 +137,6 @@ module.exports.getUserById = (event, context, callback) => {
 };
 
 module.exports.getDishByRestaurantId = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const resId = event.pathParameters.id;
   db
     .many(
@@ -188,10 +156,6 @@ module.exports.getDishByRestaurantId = (event, context, callback) => {
 };
 
 module.exports.getCommentsByDishId = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   const dishId = event.pathParameters.id;
   db
     .many(
@@ -211,10 +175,6 @@ module.exports.getCommentsByDishId = (event, context, callback) => {
 };
 
 module.exports.getComments = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   db
     .many(
       "SELECT comments.id, comments.title, comments.body, comments.created_at, comments.rating, comments.user_id, comments.dish_id FROM comments"
@@ -229,10 +189,6 @@ module.exports.getComments = (event, context, callback) => {
 };
 
 module.exports.getDishes = (event, context, callback) => {
-  if (event.source === "serverless-plugin-warmup") {
-    console.log("WarmUP - Lambda is warm!");
-    return callback(null, "Lambda is warm!");
-  }
   db
     .many(
       "SELECT dishes.id, dishes.name, dishes.description, dishes.prices, dishes.restaurant_id, restaurants.name AS restaurant_name, restaurants.address AS restaurant_address, restaurants.longitude AS restaurant_longitude, restaurants.latitude AS restaurant_latitude FROM dishes JOIN restaurants ON restaurants.id = dishes.restaurant_id"
